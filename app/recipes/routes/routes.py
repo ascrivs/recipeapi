@@ -1,11 +1,11 @@
 from app.recipes import blp as recipe_blp
 from flask_smorest import abort
 from flask.views import MethodView
-from app.schemas import BaseRecipeSchema,UpdateRecipeSchema
+from app.schemas import BaseRecipeSchema,UpdateRecipeSchema, AllRecipeSchema
 from app.models import Recipe, Direction, Ingredient, Tag
 from app import db
 
-@recipe_blp.route("/recipe")
+
 @recipe_blp.route("/recipe/<string:recipe_id>")
 class RecipeView(MethodView):
     def get(self, recipe_id):
@@ -21,8 +21,10 @@ class RecipeView(MethodView):
 @recipe_blp.route("/recipe")
 class AllRecipesView(MethodView):
 
+    @recipe_blp.response(200, BaseRecipeSchema(many=True))
     def get(self):
-        pass
+        recipes = Recipe.query.all()
+        return recipes
 
 
     @recipe_blp.arguments(BaseRecipeSchema)
