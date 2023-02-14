@@ -2,6 +2,15 @@ from marshmallow import Schema, fields
 from uuid import uuid4
 
 
+class BaseTagSchema(Schema):
+    id = fields.Str(dump_only=True)
+    recipe_id = fields.Str(required=True)
+    name = fields.Str(required=True)
+
+class UpdateTagSchema(Schema):
+    id = fields.Str(dump_only=True)
+    name = fields.Str()
+
 class BaseInstructionSchema(Schema):
     id = fields.Str(dump_only=True)
     details = fields.Str(required=True)
