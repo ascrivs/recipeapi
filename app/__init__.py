@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import config
 from flask_smorest import Api
+from flask_jwt_extended import JWTManager
 
 db = SQLAlchemy()
 
@@ -14,13 +15,12 @@ def app_factory(configurations):
 
     db.init_app(app)
 
+    jwt = JWTManager(app)
 
     Migrate(app=app, db=db)
 #   Blueprint imports
     from app.recipes import blp as recipe_blp
-    # app.register_blueprint(recipe_blp)
     from app.ingredients import blp as ingredient_blp
-    # app.register_blueprint(ingredient_blp)
 
 #   Register SmoRest API and Blueprints
 

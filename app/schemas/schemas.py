@@ -46,3 +46,8 @@ class UpdateRecipeSchema(Schema):
     tags = fields.List(fields.Nested(UpdateTagSchema()))
     ingredients = fields.List(fields.Nested(UpdateIngredientSchema()))
     instructions = fields.List(fields.Nested(UpdateInstructionSchema()))
+
+class UserSchema(Schema):
+    id = fields.Int(dump_only=True)
+    username = fields.Str(required=True)
+    password = fields.Str(required=True, load_only=True)
