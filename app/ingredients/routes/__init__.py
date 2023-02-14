@@ -1,0 +1,1 @@
+from app.ingredients.routes import *

@@ -4,7 +4,7 @@ from flask.views import MethodView
 
 
 @recipe_blp.route("/recipes/<string:recipe_id>")
-class Recipe(MethodView):
+class RecipeView(MethodView):
     def get(self, recipe_id):
         return recipe_id
     
@@ -19,7 +19,7 @@ class Recipe(MethodView):
 
 
 @recipe_blp.route("/recipes")
-class AllRecipes(MethodView):
+class AllRecipesView(MethodView):
 
     def get(self):
         pass
