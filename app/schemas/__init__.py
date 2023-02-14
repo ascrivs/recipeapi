@@ -1,1 +1,1 @@
-from app.recipes.schemas import *
+from app.schemas.schemas import *

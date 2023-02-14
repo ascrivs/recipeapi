@@ -18,9 +18,9 @@ def app_factory(configurations):
     Migrate(app=app, db=db)
 #   Blueprint imports
     from app.recipes import blp as recipe_blp
-    app.register_blueprint(recipe_blp)
+    # app.register_blueprint(recipe_blp)
     from app.ingredients import blp as ingredient_blp
-    app.register_blueprint(ingredient_blp)
+    # app.register_blueprint(ingredient_blp)
 
 #   Register SmoRest API and Blueprints
 

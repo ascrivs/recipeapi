@@ -1,4 +1,4 @@
 from flask_smorest import Blueprint
 
 
-blp = Blueprint('ingredients', __name__, description="Operations on Ingredients",url_prefix="/ingredients")
+blp = Blueprint('Ingredients', __name__, description="Operations on Ingredients",url_prefix="/ingredients")

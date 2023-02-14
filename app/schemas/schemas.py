@@ -29,19 +29,20 @@ class BaseIngredientSchema(Schema):
 
 class UpdateIngredientSchema(Schema):
     id = fields.Str(dump_only=True)
-    name = fields.Str()
     details = fields.Str()
 
 class BaseRecipeSchema(Schema):
     id = fields.Str(dump_only=True)
     name = fields.Str(required=True)
     description = fields.Str()
-    ingredients = fields.List(required=True)
-    instructions = fields.List(required=True)
+    tags = fields.List(fields.Nested(UpdateTagSchema()))
+    ingredients = fields.List(fields.Nested(UpdateIngredientSchema()))
+    directions = fields.List(fields.Nested(UpdateInstructionSchema()))
 
 class UpdateRecipeSchema(Schema):
     id = fields.Str(dump_only=True)
     name = fields.Str()
     description = fields.Str()
-    ingredients = fields.List(BaseIngredientSchema())
-    instructions = fields.List(BaseInstructionSchema())
+    tags = fields.List(fields.Nested(UpdateTagSchema()))
+    ingredients = fields.List(fields.Nested(UpdateIngredientSchema()))
+    instructions = fields.List(fields.Nested(UpdateInstructionSchema()))
