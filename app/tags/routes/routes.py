@@ -2,7 +2,7 @@ from app.tags import blp as tags_blp
 from flask.views import MethodView
 
 
-@tags_blp.route("/tags/tag/<string:tag_id>")
+@tags_blp.route("/tag/<string:tag_id>")
 class TagView(MethodView):
 
 
@@ -20,7 +20,7 @@ class TagView(MethodView):
 
 
 
-@tags_blp.route("/tags")
+@tags_blp.route("/all")
 class AllTagView(MethodView):
 
     def get(self):

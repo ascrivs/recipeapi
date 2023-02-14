@@ -3,7 +3,7 @@ from flask_smorest import abort
 from flask.views import MethodView
 
 
-@ingredient_blp.route("/ingredients/ingredient/<string:ingredient_id>")
+@ingredient_blp.route("/ingredient/<string:ingredient_id>")
 class IngredientView(MethodView):
 
     def get(self, ingredient_id):
@@ -19,7 +19,7 @@ class IngredientView(MethodView):
         pass
 
 
-@ingredient_blp.route("/ingredients")
+@ingredient_blp.route("/all")
 class AllIngredientView(MethodView):
 
     def get(self):
