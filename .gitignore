@@ -142,3 +142,11 @@ sqlite
 # My test pages
 
 test.html
+
+# SQLALCHEMY Migration folder
+
+migrations/*
+migrations/
+./migrations
+~/migrations
+/migrations
