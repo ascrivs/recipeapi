@@ -25,6 +25,12 @@ recipe_tags = db.Table(
     db.Column('recipe_id', db.String(256), db.ForeignKey('recipes.id'), primary_key=True)
 )
 
+user_roles = db.Table(
+    'user_roles',
+    db.Column('role_id',db.Integer, db.ForeignKey('roles.id'), primary_key=True),
+    db.Column('user_id', db.Integer,db.ForeignKey('users.id'), primary_key=True)
+)
+
 
 
 class User(UserMixin, db.Model):
@@ -44,6 +50,7 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime(), default=datetime.datetime.utcnow())
     member_since = db.Column(db.DateTime(), default=datetime.datetime.utcnow())
     user_recipe_history = db.relationship('Recipe', lazy='subquery', secondary=recipe_history, backref=db.backref('users', lazy=True) )
+    roles = db.relationship('Role', secondary=user_roles, back_populates='roles')
     
 
     @property
@@ -139,3 +146,10 @@ class Direction(db.Model):
     details = db.Column(db.Text, default='Someone should really add some instructions here...')
     recipe_id = db.Column(db.String(256), db.ForeignKey('recipes.id'))
     recipes = db.relationship('Recipe', backref='directions')
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+
+    id = db.Column(db.Integer, primary_key=True)
+    role_name = db.Column(db.String(128), unique=True, nullable=True)
+    users = db.relationship('User', secondary=user_roles, back_populates='role')
