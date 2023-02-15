@@ -22,13 +22,12 @@ class UpdateInstructionSchema(Schema):
 
     
 class BaseIngredientSchema(Schema):
-    id = fields.Str(dump_only=True)
+    id = fields.Int(dump_only=True)
     recipe_id = fields.Str(required=True)
-    name = fields.Str(required=True)
     details = fields.Str()
 
 class UpdateIngredientSchema(Schema):
-    id = fields.Str(dump_only=True)
+    id = fields.Int(dump_only=True)
     details = fields.Str()
 
 class BaseRecipeSchema(Schema):

@@ -5,11 +5,10 @@ from flask_jwt_extended import jwt_required, get_jwt
 from schemas import UserSchema
 from app.models import User
 
-
+@auth_blp.route('/users')
 class AuthView(MethodView):
 
     @jwt_required()
-    @auth_blp.route('/users')
     @auth_blp.response(200, UserSchema(many=True))
     def get():
         jwt = get_jwt()
