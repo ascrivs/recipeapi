@@ -50,7 +50,7 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime(), default=datetime.datetime.utcnow())
     member_since = db.Column(db.DateTime(), default=datetime.datetime.utcnow())
     user_recipe_history = db.relationship('Recipe', lazy='subquery', secondary=recipe_history, backref=db.backref('users', lazy=True) )
-    roles = db.relationship('Role', secondary=user_roles, back_populates='roles')
+    roles = db.relationship('Role', secondary=user_roles, back_populates='users')
     
 
     @property
@@ -152,4 +152,4 @@ class Role(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     role_name = db.Column(db.String(128), unique=True, nullable=True)
-    users = db.relationship('User', secondary=user_roles, back_populates='role')
+    users = db.relationship('User', secondary=user_roles, back_populates='roles')

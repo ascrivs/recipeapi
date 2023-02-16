@@ -16,6 +16,7 @@ class BaseConfig():
     OPENAPI_SWAGGER_UI_URL = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY') or ''.join([random.choice(string.ascii_letters + string.ascii_lowercase + string.digits + string.punctuation ) for n in range(128)])
 
+
 class DevConfig(BaseConfig):
     PORT = 8080
     DEBUG = True

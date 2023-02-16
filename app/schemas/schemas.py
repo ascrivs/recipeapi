@@ -39,7 +39,7 @@ class BaseRecipeSchema(Schema):
     directions = fields.List(fields.Nested(UpdateInstructionSchema()))
 
 class UpdateRecipeSchema(Schema):
-    id = fields.Str(dump_only=True)
+    id = fields.Str(required=True)
     name = fields.Str()
     description = fields.Str()
     tags = fields.List(fields.Nested(UpdateTagSchema()))
