@@ -21,12 +21,14 @@ def app_factory(configurations):
 #   Blueprint imports
     from app.recipes import blp as recipe_blp
     from app.ingredients import blp as ingredient_blp
+    from app.directions import blp as direct_blp
 
 #   Register SmoRest API and Blueprints
 
     api = Api(app)
     api.register_blueprint(recipe_blp)
     api.register_blueprint(ingredient_blp)
+    api.register_blueprint(direct_blp)
     
 
 

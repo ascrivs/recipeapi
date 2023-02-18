@@ -8,32 +8,6 @@ from app.models import Recipe, Direction, Ingredient, Tag, recipe_tags
 from app import db
 
 
-
-# def property_list_update(new_object_list, existing_obj_list, exist_list_obj_property, existing_recipe, model_class, model_class_property):
-#     for new_obj in new_object_list:
-#         if new_obj in exist_list_obj_property:
-#             new_object_list.pop(new_object_list.index(new_obj))
-#             obj_index = exist_list_obj_property.index(new_obj)
-#             existing_obj_list.pop(obj_index)
-#             exist_list_obj_property.pop(obj_index)
-#     len_existing = len(existing_obj_list)
-#     len_new = len(new_object_list)
-#     if len_existing > len_new:
-#         for i in range(len_existing-len_new):
-#             db.session.delete(existing_obj_list[0])
-#             existing_obj_list.pop(0)
-#     elif len_new > len_existing:
-#         for i in range(len_new - len_existing):
-#             create_obj = model_class(model_class_property=new_object_list[0], recipe_id=existing_recipe.id)
-#             db.session.add(create_obj)
-#             new_object_list.pop(0)
-#     if len_new > 0:
-#         for new_obj in new_object_list:
-#             existing_obj_list[0].model_class_property = new_obj
-#             db.session.add(existing_obj_list[0])
-#             existing_obj_list.pop(0)
-#         db.session.commit()
-
 @recipe_blp.route("/recipe/<int:recipe_id>")
 class RecipeView(MethodView):
 
@@ -59,7 +33,7 @@ class RecipeView(MethodView):
             for i in new_ing:
                 if exist_ing.get(i) != None:
                     exist_ing.pop(i)
-                    new_ing.pop(i)
+                    new_ing.pop(new_ing.index(i))
             for ing in exist_ing:
                 requests.delete(url_for('Ingredients.IngredientView', ingredient_id=exist_ing[ing].id, _external=True))
                 print("older:"+ing)
@@ -76,7 +50,7 @@ class RecipeView(MethodView):
             for i in new_dir:
                 if exist_dir.get(i) != None:
                     exist_dir.pop(i)
-                    new_dir.pop(i)
+                    new_dir.pop(new_dir.index(i))
             for direct in exist_dir:
                 requests.delete(url_for('Directions.DirectionView', direction_id=exist_dir[direct].id, _external=True))
             for direct in new_dir:
@@ -84,7 +58,7 @@ class RecipeView(MethodView):
                     "details": direct,
                     "recipe_id": recipe.id
                 }
-                requests.post(url_for('Directions.AllDirectionView', _external=True), json=payload)
+                requests.post(url_for('Directions.AllDirectionsView', _external=True), json=payload)
         db.session.commit()
         recipe = Recipe.query.filter_by(id=recipe_id).first()
         return recipe
@@ -105,7 +79,7 @@ class AllRecipesView(MethodView):
     @recipe_blp.arguments(BaseRecipeSchema)
     @recipe_blp.response(201, BaseRecipeSchema)
     def post(self, recipe):
-        new_recipe = Recipe(name=recipe['name'].lower(),description=recipe['description'])
+        new_recipe = Recipe(name=recipe['name'],description=recipe['description'])
         db.session.add(new_recipe)
         db.session.commit()
         recipe_new_tags = []
