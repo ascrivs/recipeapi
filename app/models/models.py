@@ -15,14 +15,14 @@ from uuid import uuid4
 
 recipe_history = db.Table('recipe_history',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
-    db.Column('recipe_id', db.String(256), db.ForeignKey('recipes.id'), primary_key=True)
+    db.Column('recipe_id', db.Integer, db.ForeignKey('recipes.id'), primary_key=True)
 )
 
 
 recipe_tags = db.Table(
     'recipe_tags',
     db.Column('tag_id', db.Integer, db.ForeignKey('tags.id'), primary_key=True),
-    db.Column('recipe_id', db.String(256), db.ForeignKey('recipes.id'), primary_key=True)
+    db.Column('recipe_id', db.Integer, db.ForeignKey('recipes.id'), primary_key=True)
 )
 
 user_roles = db.Table(
@@ -106,7 +106,7 @@ class User(UserMixin, db.Model):
 
 class Recipe(db.Model):
     __tablename__ = 'recipes'
-    id = db.Column(db.String(256), primary_key=True, default=uuid4().hex)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
     description = db.Column(db.Text)
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -133,7 +133,7 @@ class Ingredient(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     details = db.Column(db.String(256))
-    recipe_id = db.Column(db.String(256), db.ForeignKey('recipes.id'))
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'))
     recipes = db.relationship('Recipe', backref='ingredients')
 
     def __repr__(self):
@@ -144,7 +144,7 @@ class Direction(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     details = db.Column(db.Text, default='Someone should really add some instructions here...')
-    recipe_id = db.Column(db.String(256), db.ForeignKey('recipes.id'))
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'))
     recipes = db.relationship('Recipe', backref='directions')
 
 class Role(db.Model):

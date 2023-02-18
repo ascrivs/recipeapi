@@ -26,9 +26,8 @@ class IngredientView(MethodView):
         db.session.commit()
         return updated_ingredient
 
-    @ingredient_blp.arguments(UpdateIngredientSchema)
     @ingredient_blp.response(200, UpdateIngredientSchema)
-    def delete(self, ingredient_data, ingredient_id):
+    def delete(self, ingredient_id):
         ingredient = Ingredient.query.filter_by(id=ingredient_id).first()
         db.session.delete(ingredient)
         db.session.commit()
