@@ -36,9 +36,7 @@ class RecipeView(MethodView):
                     new_ing.pop(new_ing.index(i))
             for ing in exist_ing:
                 requests.delete(url_for('Ingredients.IngredientView', ingredient_id=exist_ing[ing].id, _external=True))
-                print("older:"+ing)
             for ing in new_ing:
-                print(ing)
                 payload = {
                     "details": ing,
                     "recipe_id": recipe.id
@@ -59,11 +57,33 @@ class RecipeView(MethodView):
                     "recipe_id": recipe.id
                 }
                 requests.post(url_for('Directions.AllDirectionsView', _external=True), json=payload)
+        if recipe_data.get('tags') != None:
+            exist_tags = {k.name:k for k in recipe.tags}
+            new_tags = [k['name'] for k in recipe_data['tags']]
+            for i in new_tags:
+                if exist_tags.get(i) != None:
+                    exist_tags.pop(i)
+                    new_tags.pop(new_tags.index(i))
+            for tag in exist_tags:
+                requests.delete(url_for('Recipes.RecipeTagView', tag_id=exist_tags[tag].id, _external=True))
+            for tag in new_tags:
+                payload = {
+                    "name": tag,
+                }
+                requests.post(url_for('Tags.AllTagsView', _external=True), json=payload)
+
+
+
+
+
+
+
+
+
+
         db.session.commit()
         recipe = Recipe.query.filter_by(id=recipe_id).first()
         return recipe
-
-        
 
 
 
