@@ -65,22 +65,12 @@ class RecipeView(MethodView):
                     exist_tags.pop(i)
                     new_tags.pop(new_tags.index(i))
             for tag in exist_tags:
-                requests.delete(url_for('Recipes.RecipeTagView', tag_id=exist_tags[tag].id, _external=True))
+                requests.delete(url_for('Tags.TagView', tag_id=exist_tags[tag].id, _external=True))
             for tag in new_tags:
                 payload = {
                     "name": tag,
                 }
                 requests.post(url_for('Tags.AllTagsView', _external=True), json=payload)
-
-
-
-
-
-
-
-
-
-
         db.session.commit()
         recipe = Recipe.query.filter_by(id=recipe_id).first()
         return recipe
