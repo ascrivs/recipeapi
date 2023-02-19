@@ -1,0 +1,1 @@
+from app.tags.routes import routes

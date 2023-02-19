@@ -21,6 +21,8 @@ class IngredientView(MethodView):
     @ingredient_blp.response(201, BaseIngredientSchema)
     def put(self, ingredient_data, ingredient_id):
         updated_ingredient = Ingredient.query.filter_by(id=ingredient_id).first()
+        if updated_ingredient == None:
+            abort(404, message="Ingredient not found.")
         updated_ingredient.details = ingredient_data['details']
         db.session.add(updated_ingredient)
         db.session.commit()

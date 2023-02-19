@@ -2,15 +2,16 @@ from app.tags import blp as tags_blp
 from flask.views import MethodView
 from app import db
 from app.models import Tag
-from app.schemas import BaseTagSchema
+from app.schemas import BaseTagSchema, AllTagSchema
 
 
 @tags_blp.route("/tag/<int:tag_id>")
 class TagView(MethodView):
 
-
+    @tags_blp.response(200, AllTagSchema)
     def get(self, tag_id):
-        pass
+        tag = Tag.query.filter_by(id=tag_id).first()
+        return tag
 
     def put(self):
         pass
@@ -22,16 +23,17 @@ class TagView(MethodView):
         pass
 
 
-
 @tags_blp.route("/")
 class AllTagsView(MethodView):
 
-    tags_blp.response(200, BaseTagSchema(many=True))
+    tags_blp.response(200, AllTagSchema(many=True))
     def get(self):
-        return Tag.query.all()
+        tags = Tag.query.all()
+        listed_tags = [tag.serialize() for tag in tags]
+        return listed_tags
 
     @tags_blp.arguments(BaseTagSchema)
-    @tags_blp.arguments(201, BaseTagSchema)
+    @tags_blp.response(201, BaseTagSchema)
     def post(self, tag_data):
         new_tag = Tag(name=tag_data['name'])
         db.session.add(new_tag)

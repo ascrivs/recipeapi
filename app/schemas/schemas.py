@@ -35,8 +35,11 @@ class BaseRecipeSchema(Schema):
     ingredients = fields.List(fields.Nested(UpdateIngredientSchema()))
     directions = fields.List(fields.Nested(UpdateDirectionSchema()))
 
+class CoreTagRecipeSchema(Schema):
+    name = fields.Str(dump_only=True)
+    
 class AllTagSchema(Schema):
-    id = fields.Str(dump_only=True)
+    id = fields.Int(dump_only=True)
     name = fields.Str()
     recipes = fields.List(fields.Nested(BaseRecipeSchema()))
 

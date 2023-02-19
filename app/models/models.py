@@ -116,6 +116,15 @@ class Recipe(db.Model):
     def __repr__(self):
         return f'{self.name}'
 
+    def serialize(self):
+        recipe_dict = {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "tags": [tag.name for tag in self.tags]
+        }
+        return recipe_dict
+
 
 
 class Tag(db.Model):
@@ -126,6 +135,14 @@ class Tag(db.Model):
 
     def __repr__(self):
         return f'{self.name}'
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'recipes': [recipe.serialize() for recipe in self.recipes]
+        }
+
 
 
 class Ingredient(db.Model):
