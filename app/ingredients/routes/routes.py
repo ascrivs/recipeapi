@@ -6,7 +6,7 @@ from app.models import Ingredient
 from app import db
 
 
-@ingredient_blp.route("/ingredient/<int:ingredient_id>")
+@ingredient_blp.route("/ingredient/<string:ingredient_id>")
 class IngredientView(MethodView):
 
     @ingredient_blp.response(200, BaseIngredientSchema)

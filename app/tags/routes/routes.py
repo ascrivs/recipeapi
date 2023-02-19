@@ -6,7 +6,7 @@ from app.models import Tag, recipe_tags
 from app.schemas import BaseTagSchema, AllTagSchema
 
 
-@tags_blp.route("/tag/<int:tag_id>")
+@tags_blp.route("/tag/<string:tag_id>")
 class TagView(MethodView):
 
     @tags_blp.response(200, AllTagSchema)

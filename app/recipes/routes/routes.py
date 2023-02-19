@@ -8,7 +8,7 @@ from app.models import Recipe, Direction, Ingredient, Tag, recipe_tags
 from app import db
 
 
-@recipe_blp.route("/recipe/<int:recipe_id>")
+@recipe_blp.route("/recipe/<string:recipe_id>")
 class RecipeView(MethodView):
 
     @recipe_blp.response(200, BaseRecipeSchema)
@@ -114,3 +114,14 @@ class AllRecipesView(MethodView):
         db.session.commit()
         return new_recipe
 
+
+@recipe_blp.route("/<string:recipe_id>/recipetag/<string:tag_id>")
+class RecipeTagView(MethodView):
+
+    recipe_blp.response(201, BaseRecipeSchema)
+    def delete(self, recipe_id, tag_id):
+        tag = recipe_tags.query.filter_by(recipe_id=recipe_id, tag_id=tag_id).first()
+        db.session.delete(tag)
+        db.session.commit()
+        recipe = Recipe.query.filter_by(id=recipe_id).first()
+        return recipe

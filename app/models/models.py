@@ -14,21 +14,21 @@ from uuid import uuid4
 
 
 recipe_history = db.Table('recipe_history',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
-    db.Column('recipe_id', db.Integer, db.ForeignKey('recipes.id'), primary_key=True)
+    db.Column('user_id', db.String(32), db.ForeignKey('users.id'), primary_key=True),
+    db.Column('recipe_id', db.String(32), db.ForeignKey('recipes.id'), primary_key=True)
 )
 
 
 recipe_tags = db.Table(
     'recipe_tags',
-    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id'), primary_key=True),
-    db.Column('recipe_id', db.Integer, db.ForeignKey('recipes.id'), primary_key=True)
+    db.Column('tag_id', db.String(32), db.ForeignKey('tags.id'), primary_key=True),
+    db.Column('recipe_id', db.String(32), db.ForeignKey('recipes.id'), primary_key=True)
 )
 
 user_roles = db.Table(
     'user_roles',
     db.Column('role_id',db.Integer, db.ForeignKey('roles.id'), primary_key=True),
-    db.Column('user_id', db.Integer,db.ForeignKey('users.id'), primary_key=True)
+    db.Column('user_id', db.String(32),db.ForeignKey('users.id'), primary_key=True)
 )
 
 
@@ -38,7 +38,7 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
     
     default_photo = 'default.png'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(32), primary_key=True, default=lambda: str(uuid4().hex))
     avatar = db.Column(db.String(128),default=default_photo)
     username = db.Column(db.String(128), unique=True)
     email = db.Column(db.String(128), unique=True, index=True)
@@ -106,10 +106,10 @@ class User(UserMixin, db.Model):
 
 class Recipe(db.Model):
     __tablename__ = 'recipes'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(32), primary_key=True, default=lambda: str(uuid4().hex) index=True)
     name = db.Column(db.String(256), nullable=False)
     description = db.Column(db.Text)
-    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_by = db.Column(db.String(32), db.ForeignKey('users.id'))
     image = db.Column(db.String(32), default='recipe_default.png')
     tags = db.relationship('Tag', secondary=recipe_tags, back_populates='recipes')
 
@@ -129,7 +129,7 @@ class Recipe(db.Model):
 
 class Tag(db.Model):
     __tablename__ = 'tags'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(32), primary_key=True, default=lambda: str(uuid4().hex), index=True)
     name = db.Column(db.String(64), unique=True)
     recipes = db.relationship('Recipe', secondary=recipe_tags, back_populates='tags')
 
@@ -148,9 +148,9 @@ class Tag(db.Model):
 class Ingredient(db.Model):
     __tablename__ = 'ingredients'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(32), primary_key=True, default=lambda: str(uuid4().hex), index=True)
     details = db.Column(db.String(256))
-    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'))
+    recipe_id = db.Column(db.String(32), db.ForeignKey('recipes.id'))
     recipes = db.relationship('Recipe', backref='ingredients')
 
     def __repr__(self):
@@ -159,14 +159,14 @@ class Ingredient(db.Model):
 class Direction(db.Model):
     __tablename__ = 'directions'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(32), primary_key=True, default=lambda: str(uuid4().hex), index=True)
     details = db.Column(db.Text, default='Someone should really add some instructions here...')
-    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'))
+    recipe_id = db.Column(db.String(32), db.ForeignKey('recipes.id'))
     recipes = db.relationship('Recipe', backref='directions')
 
 class Role(db.Model):
     __tablename__ = 'roles'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, index=True)
     role_name = db.Column(db.String(128), unique=True, nullable=True)
     users = db.relationship('User', secondary=user_roles, back_populates='roles')

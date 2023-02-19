@@ -6,7 +6,7 @@ from app import db
 
 
 
-@direct_blp.route('/direction/<int:direct_id>')
+@direct_blp.route('/direction/<string:direct_id>')
 class DirectionView(MethodView):
 
     @direct_blp.response(200, BaseDirectionSchema)

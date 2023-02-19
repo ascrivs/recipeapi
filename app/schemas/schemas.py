@@ -14,21 +14,21 @@ class BaseDirectionSchema(Schema):
     recipe_id = fields.Int(required=True)
 
 class UpdateDirectionSchema(Schema):
-    id = fields.Int(dump_only=True)
+    id = fields.Str(dump_only=True)
     details = fields.Str()
 
     
 class BaseIngredientSchema(Schema):
-    id = fields.Int(dump_only=True)
-    recipe_id = fields.Int(required=True)
+    id = fields.Str(dump_only=True)
+    recipe_id = fields.Str(required=True)
     details = fields.Str()
 
 class UpdateIngredientSchema(Schema):
-    id = fields.Int(dump_only=True)
+    id = fields.Str(dump_only=True)
     details = fields.Str()
 
 class BaseRecipeSchema(Schema):
-    id = fields.Int(dump_only=True)
+    id = fields.Str(dump_only=True)
     name = fields.Str(required=True)
     description = fields.Str()
     tags = fields.List(fields.Nested(BaseTagSchema()))
@@ -39,7 +39,7 @@ class CoreTagRecipeSchema(Schema):
     name = fields.Str(dump_only=True)
     
 class AllTagSchema(Schema):
-    id = fields.Int(dump_only=True)
+    id = fields.Str(dump_only=True)
     name = fields.Str()
     recipes = fields.List(fields.Nested(BaseRecipeSchema()))
 
