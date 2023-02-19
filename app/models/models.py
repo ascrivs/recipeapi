@@ -106,7 +106,7 @@ class User(UserMixin, db.Model):
 
 class Recipe(db.Model):
     __tablename__ = 'recipes'
-    id = db.Column(db.String(32), primary_key=True, default=lambda: str(uuid4().hex) index=True)
+    id = db.Column(db.String(32), primary_key=True, default=lambda: str(uuid4().hex), index=True)
     name = db.Column(db.String(256), nullable=False)
     description = db.Column(db.Text)
     created_by = db.Column(db.String(32), db.ForeignKey('users.id'))
