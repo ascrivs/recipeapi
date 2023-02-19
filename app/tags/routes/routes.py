@@ -1,7 +1,8 @@
 from app.tags import blp as tags_blp
 from flask.views import MethodView
+from flask_smorest import abort
 from app import db
-from app.models import Tag
+from app.models import Tag, recipe_tags
 from app.schemas import BaseTagSchema, AllTagSchema
 
 
@@ -13,14 +14,25 @@ class TagView(MethodView):
         tag = Tag.query.filter_by(id=tag_id).first()
         return tag
 
-    def put(self):
-        pass
+    @tags_blp.arguments(BaseTagSchema)
+    @tags_blp.response(201, BaseTagSchema)
+    def put(self, tag_data, tag_id):
+        tag = Tag.query.filter_by(id=tag_id).first()
+        tag.name = tag_data['name']
+        db.session.add(tag)
+        db.session.commit()
+        return tag
 
-    def post(self):
-        pass
+    @tags_blp.response(201, BaseTagSchema)
+    def delete(self, tag_id):
+        tag = Tag.query.filter_by(id=tag_id).first()
+        if tag == None:
+            abort(403, message="No tag found.")
+        db.session.execute(recipe_tags.delete().where(recipe_tags.c.tag_id==tag_id))
+        db.session.commit()
+        return tag
 
-    def delete(self):
-        pass
+
 
 
 @tags_blp.route("/")
