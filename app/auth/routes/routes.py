@@ -1,11 +1,42 @@
 from app.auth import blp as auth_blp
+from flask import jsonify
 from flask.views import MethodView
 from flask_smorest import abort
 from flask_jwt_extended import jwt_required, get_jwt, create_access_token
 from schemas import UserSchema
 from app.models import User
-from app import db
+from app import db, jwt
 from datetime import datetime
+
+
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    return (
+        jsonify({"message": "The token has expired.", "error": "token_expired"}),
+        401,
+    )
+
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    return (
+        jsonify(
+            {"message": "Signature verification failed.", "error": "invalid_token"}
+        ),
+        401,
+    )
+
+@jwt.unauthorized_loader
+def missing_token_callback(error):
+    return (
+        jsonify(
+            {
+                "description": "Request does not contain an access token.",
+                "error": "authorization_required",
+            }
+        ),
+        401,
+    )
+
 
 @auth_blp.route('/users')
 class AccountAdminView(MethodView):

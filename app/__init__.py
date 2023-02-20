@@ -33,7 +33,7 @@ def app_factory(configurations):
     api.register_blueprint(tag_blp)
     
 
-
+    
 
     
     return app
