@@ -3,6 +3,7 @@ from flask.views import MethodView
 from flask_smorest import abort
 from app import db
 from app.models import Tag, recipe_tags
+from flask_jwt_extended import get_jwt, jwt_required
 from app.schemas import BaseTagSchema, AllTagSchema
 
 
@@ -14,6 +15,7 @@ class TagView(MethodView):
         tag = Tag.query.filter_by(id=tag_id).first()
         return tag
 
+    @jwt_required()
     @tags_blp.arguments(BaseTagSchema)
     @tags_blp.response(201, BaseTagSchema)
     def put(self, tag_data, tag_id):
@@ -23,8 +25,12 @@ class TagView(MethodView):
         db.session.commit()
         return tag
 
+    @jwt_required()
     @tags_blp.response(201, BaseTagSchema)
     def delete(self, tag_id):
+        jwt = get_jwt()
+        if jwt.get('role') != 'administrator':
+            abort(403, message="Administrator access required.")
         tag = Tag.query.filter_by(id=tag_id).first()
         if tag == None:
             abort(403, message="No tag found.")
@@ -44,6 +50,7 @@ class AllTagsView(MethodView):
         listed_tags = [tag.serialize() for tag in tags]
         return listed_tags
 
+    @jwt_required()
     @tags_blp.arguments(BaseTagSchema)
     @tags_blp.response(201, BaseTagSchema)
     def post(self, tag_data):
