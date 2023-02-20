@@ -22,7 +22,7 @@ class DirectionView(MethodView):
         jwt = get_jwt()
         direct = Direction.query.filter_by(id=direct_id).first()
         recipe = Recipe.query.filter_by(id=direct.recipe_id).first()
-        if jwt.get('id') != recipe.created_by or jwt.get('role') == 'administrator':
+        if jwt.get('id') == recipe.created_by:
             db.session.delete(direct)
             db.session.commit()
             return direct
@@ -34,7 +34,7 @@ class DirectionView(MethodView):
         jwt = get_jwt()
         direct = Direction.query.filter_by(id=direct_id).first()
         recipe = Recipe.query.filter_by(id=direct.recipe_id).first()
-        if jwt.get('id') != recipe.created_by or jwt.get('role') == 'administrator':
+        if jwt.get('id') == recipe.created_by:
             direct.details = direct_data["details"]
             db.session.add(direct)
             db.session.commit()
@@ -56,7 +56,7 @@ class AllDirectionsView(MethodView):
     @direct_blp.response(201, BaseDirectionSchema)
     def post(self, direction_data):
         jwt = get_jwt()
-        if jwt.get('id') == Recipe.query.filter_by(id=direction_data['recipe_id']).created_by or jwt.get('role') == 'administrator':
+        if jwt.get('id') == Recipe.query.filter_by(id=direction_data['recipe_id']).first().created_by:
             direction = Direction(details=direction_data['details'], recipe_id=direction_data['recipe_id'])
             db.session.add(direction)
             db.session.commit()

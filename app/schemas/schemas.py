@@ -11,7 +11,7 @@ class BaseTagSchema(Schema):
 class BaseDirectionSchema(Schema):
     id = fields.Str(dump_only=True)
     details = fields.Str(required=True)
-    recipe_id = fields.Int(required=True)
+    recipe_id = fields.Str(required=True)
 
 class UpdateDirectionSchema(Schema):
     id = fields.Str(dump_only=True)
