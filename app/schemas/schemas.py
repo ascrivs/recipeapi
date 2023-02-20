@@ -21,7 +21,7 @@ class UpdateDirectionSchema(Schema):
 class BaseIngredientSchema(Schema):
     id = fields.Str(dump_only=True)
     recipe_id = fields.Str(required=True)
-    details = fields.Str()
+    details = fields.Str(required=True)
 
 class UpdateIngredientSchema(Schema):
     id = fields.Str(dump_only=True)

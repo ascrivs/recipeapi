@@ -113,6 +113,8 @@ class AllRecipesView(MethodView):
     def post(self, recipe):
         jwt = get_jwt()
         new_recipe = Recipe(name=recipe['name'],description=recipe['description'], created_by=jwt.get('id'))
+        request_head = request.headers.get('Authorization')
+        head = {'Authorization': request_head}
         db.session.add(new_recipe)
         db.session.commit()
         recipe_new_tags = []
@@ -122,18 +124,26 @@ class AllRecipesView(MethodView):
             if existing_tag != None:
                 recipe_new_tags.append(existing_tag)
             else:
-                new_tag = Tag(name=query_tag)
-                db.session.add(new_tag)
+                payload = {
+                    "name": query_tag
+                }
+                response = requests.post(url_for('Tags.AllTagsView', _external=True), json=payload, headers=head)
+                response_json = response.json()
+                new_tag = Tag.query.filter_by(id=response_json['id']).first()
                 recipe_new_tags.append(new_tag)
         for recipe_ingredient in recipe['ingredients']:
-            new_ingredient = Ingredient(details=recipe_ingredient['details'], recipe_id=new_recipe.id)
-            db.session.add(new_ingredient)
+            payload = {
+                "details": recipe_ingredient['details'],
+                "recipe_id": new_recipe.id
+                }
+            requests.post(url_for('Ingredients.AllIngredientView', _external=True), json=payload, headers=head)
         for recipe_direction in recipe['directions']:
-            new_direction = Direction(details=recipe_direction['details'], recipe_id=new_recipe.id)
-            db.session.add(new_direction)
-        db.session.commit()
+            payload = {
+                "details": recipe_direction['details'],
+                "recipe_id": new_recipe.id
+            }
+            requests.post(url_for('Directions.AllDirectionsView', _external=True), json=payload, headers=head)
         new_recipe.tags = recipe_new_tags
-        db.session.add(new_recipe)
         db.session.commit()
         return new_recipe
 
@@ -151,4 +161,3 @@ class RecipeTagView(MethodView):
             db.session.commit()
             return recipe
         abort(403, message="Access denied.")
-        
