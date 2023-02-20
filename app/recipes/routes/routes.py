@@ -81,10 +81,17 @@ class RecipeView(MethodView):
                 for tag in exist_tags:
                     requests.delete(url_for('Recipes.RecipeTagView', tag_id=exist_tags[tag].id, recipe_id=recipe.id, _external=True), headers=head)
                 for tag in new_tags:
-                    payload = {
-                        "name": tag,
-                    }
-                    requests.post(url_for('Tags.AllTagsView', _external=True), json=payload, headers=head)
+                    record_tag = Tag.query.filter_by(name=tag).first()
+                    if record_tag == None:
+                        payload = {
+                            "name": tag,
+                        }
+                        requests.post(url_for('Tags.AllTagsView', _external=True), json=payload, headers=head)
+                    else:
+                        recipe.tags.append(record_tag)
+
+
+
             db.session.commit()
             recipe = Recipe.query.filter_by(id=recipe_id).first()
             return recipe
