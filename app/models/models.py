@@ -99,7 +99,6 @@ class User(UserMixin, db.Model):
     
     def ping(self):
         self.last_seen = datetime.datetime.utcnow()
-        db.session.add(self)
         db.session.commit()
     
 

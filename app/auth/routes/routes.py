@@ -3,7 +3,7 @@ from flask import jsonify
 from flask.views import MethodView
 from flask_smorest import abort
 from flask_jwt_extended import jwt_required, get_jwt, create_access_token
-from schemas import UserSchema
+from app.schemas import UserSchema
 from app.models import User
 from app import db, jwt
 from datetime import datetime
@@ -43,18 +43,19 @@ class AccountAdminView(MethodView):
 
     @jwt_required()
     @auth_blp.response(200, UserSchema(many=True))
-    def get():
+    def get(self):
         jwt = get_jwt()
         if jwt.get("role") != 'administrator':
             abort(403, message="Administrator  privileges required.")
         else:
+            User.ping()
             users = User.query.all()
         return users
     
     @jwt_required()
     @auth_blp.arguments(UserSchema)
-    @auth_blp.response(UserSchema)
-    def post(user_data):
+    @auth_blp.response(201, UserSchema)
+    def post(self, user_data):
         jwt = get_jwt()
         if jwt.get("role") != 'administrator':
             abort(403, message="Administrator privileges required.")
@@ -68,16 +69,21 @@ class AccountAdminView(MethodView):
 class AuthenticationView(MethodView):
     
     @auth_blp.arguments(UserSchema)
-    def post(user_data):
+    def post(self, user_data):
         user = User.query.filter_by(email=user_data["email"]).first()
 
-        if user.verify_password(user_data["password"]):
+        if user.verify_password(user_data["password"]) and not user.account_locked:
             add_claims = {
                 "role": user.role,
-                "iat": datetime.utcnow()
+                "iat": datetime.utcnow(),
+                "id": user.id
             }
-            access_token = create_access_token(identity=user.id)
+            access_token = create_access_token(identity=user.id, additional_claims=add_claims)
             return {"access_token": access_token}, 200
         user.failed_pwd += 1
+        if user.failed_pwd >= 3:
+            user.account_locked = True
         db.session.commit()
+        if user.account_locked:
+            abort(401, message="Account is locked out.")
         abort (401, message="Invalid credentials.")

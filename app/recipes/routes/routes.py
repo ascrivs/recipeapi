@@ -5,7 +5,7 @@ from flask import url_for
 from flask_jwt_extended import jwt_required, get_jwt
 import requests
 from app.schemas import BaseRecipeSchema, UpdateRecipeSchema
-from app.models import Recipe, Direction, Ingredient, Tag, recipe_tags
+from app.models import Recipe, Direction, Ingredient, Tag, recipe_tags, User
 from app import db
 
 
@@ -34,7 +34,7 @@ class RecipeView(MethodView):
     def put(self, recipe_data, recipe_id):
         recipe = Recipe.query.filter_by(id=recipe_id).first()
         jwt = get_jwt()
-        if jwt.get('id') == recipe.created_by or jwt.get('role') == 'administrator':
+        if jwt.get('id') == recipe.created_by:
             if recipe_data.get('ingredients') != None:
                 exist_ing = {k.details:k for k in recipe.ingredients}
                 new_ing = [k['details'] for k in recipe_data['ingredients']]
@@ -58,7 +58,7 @@ class RecipeView(MethodView):
                         exist_dir.pop(i)
                         new_dir.pop(new_dir.index(i))
                 for direct in exist_dir:
-                    requests.delete(url_for('Directions.DirectionView', direction_id=exist_dir[direct].id, _external=True))
+                    requests.delete(url_for('Directions.DirectionView', direct_id=exist_dir[direct].id, _external=True))
                 for direct in new_dir:
                     payload = {
                         "details": direct,
