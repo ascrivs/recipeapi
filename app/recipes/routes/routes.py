@@ -5,8 +5,8 @@ from flask import url_for, request
 from flask_jwt_extended import jwt_required, get_jwt
 import requests
 from app.schemas import BaseRecipeSchema, UpdateRecipeSchema
-from app.models import Recipe, Direction, Ingredient, Tag, recipe_tags, User
-from app import db, jwt as app_jwt_mgr
+from app.models import Recipe, Ingredient, Tag, recipe_tags
+from app import db
 
 
 @recipe_blp.route("/recipe/<string:recipe_id>")

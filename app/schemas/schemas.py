@@ -6,8 +6,6 @@ class BaseTagSchema(Schema):
     id = fields.Str(dump_only=True)
     name = fields.Str(required=True)
 
-
-
 class BaseDirectionSchema(Schema):
     id = fields.Str(dump_only=True)
     details = fields.Str(required=True)
@@ -34,9 +32,6 @@ class BaseRecipeSchema(Schema):
     tags = fields.List(fields.Nested(BaseTagSchema()))
     ingredients = fields.List(fields.Nested(UpdateIngredientSchema()))
     directions = fields.List(fields.Nested(UpdateDirectionSchema()))
-
-class CoreTagRecipeSchema(Schema):
-    name = fields.Str(dump_only=True)
     
 class AllTagSchema(Schema):
     id = fields.Str(dump_only=True)
