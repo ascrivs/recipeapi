@@ -23,7 +23,7 @@ class DevConfig(BaseConfig):
     DEBUG = True
     ENV = 'development'
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI') or 'sqlite:///'+os.path.join(basedir+'/dev-db.sqlite')
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=5)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=1)
 
 class TestConfig(BaseConfig):
@@ -32,7 +32,7 @@ class TestConfig(BaseConfig):
     TESTING = True
     ENV = 'testing'
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI') or 'sqlite:///'+os.path.join(basedir+'/testing-db.sqlite')
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(hours=2)
 
 class ProdConfig(BaseConfig):
@@ -41,7 +41,7 @@ class ProdConfig(BaseConfig):
     TESTING = False
     ENV = 'production'
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=4)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=7)
 
 

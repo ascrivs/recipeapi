@@ -32,15 +32,28 @@ user_roles = db.Table(
 )
 
 
-class BlockedTokens(db.Model):
+class BlockedToken(db.Model):
 
     __tablename__ = 'blockedtokens'
     id = db.Column(db.Integer, primary_key=True, index=True, unique=True)
     blocked_date = db.Column(db.DateTime(),default=lambda: str(datetime.datetime.utcnow()))
     user_id = db.Column(db.String(32), db.ForeignKey('users.id'))
+    jti = db.Columne(db.String(64))
     expiration_date = db.Column(db.DateTime())
 
-    user = db.relationship('User')
+    users = db.relationship('User')
+
+
+class UserRefreshToken(db.Model):
+    __tablename__ = 'userrefreshtokens'
+
+    id = db.Column(db.Integer, primary_key=True, index=True, unique=True)
+    user_id = db.Column(db.String(32), db.ForeignKey('users.id'))
+    expiration_date = db.Column(db.DateTime())
+    jti = db.Columne(db.String(64))
+    users = db.relationship('User')
+
+
 
 class User(UserMixin, db.Model):
 

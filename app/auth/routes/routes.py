@@ -103,3 +103,8 @@ class AuthJWTTest(MethodView):
     def get(self):
         jwt = get_jwt()
         return jwt, 200
+
+@auth_blp.route("/logout")
+class LogoutView(MethodView):
+    def post():
+        pass
