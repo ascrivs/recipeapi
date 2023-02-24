@@ -1,8 +1,9 @@
 from app.ingredients import blp as ingredient_blp
 from flask_smorest import abort
+from flask_jwt_extended import jwt_required, get_jwt
 from flask.views import MethodView
 from app.schemas import BaseIngredientSchema, UpdateIngredientSchema
-from app.models import Ingredient
+from app.models import Ingredient, Recipe
 from app import db
 
 
@@ -17,16 +18,19 @@ class IngredientView(MethodView):
         else:
             abort(404,message="Ingredient not found.")
     
+    @jwt_required(fresh=True)
     @ingredient_blp.arguments(UpdateIngredientSchema)
     @ingredient_blp.response(201, BaseIngredientSchema)
     def put(self, ingredient_data, ingredient_id):
+        jwt = get_jwt()
         updated_ingredient = Ingredient.query.filter_by(id=ingredient_id).first()
-        if updated_ingredient == None:
-            abort(404, message="Ingredient not found.")
-        updated_ingredient.details = ingredient_data['details']
-        db.session.add(updated_ingredient)
-        db.session.commit()
-        return updated_ingredient
+        if jwt["id"] == Recipe.query.filter_by(id=updated_ingredient.recipe_id).first().created_by:
+            if updated_ingredient == None:
+                abort(404, message="Ingredient not found.")
+            updated_ingredient.details = ingredient_data['details']
+            db.session.add(updated_ingredient)
+            db.session.commit()
+            return updated_ingredient
 
     @ingredient_blp.response(200, UpdateIngredientSchema)
     def delete(self, ingredient_id):

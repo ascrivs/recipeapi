@@ -2,7 +2,7 @@ from app.auth import blp as auth_blp
 from flask import jsonify
 from flask.views import MethodView
 from flask_smorest import abort
-from flask_jwt_extended import jwt_required, get_jwt, create_access_token
+from flask_jwt_extended import jwt_required, get_jwt, create_access_token, get_jwt_identity, create_refresh_token
 from app.schemas import UserSchema
 from app.models import User
 from app import db, jwt
@@ -37,11 +37,20 @@ def missing_token_callback(error):
         401,
     )
 
+@auth_blp.route('/refresh')
+class AccountAuthentication(MethodView):
+
+    @jwt_required(refresh=True)
+    def refresh(self):
+        identity = get_jwt_identity()
+        access_token = create_access_token(identity=identity)
+        return jsonify(access_token=access_token)
+
 
 @auth_blp.route('/users')
 class AccountAdminView(MethodView):
 
-    @jwt_required()
+    @jwt_required(fresh=True)
     @auth_blp.response(200, UserSchema(many=True))
     def get(self):
         jwt = get_jwt()
@@ -52,7 +61,7 @@ class AccountAdminView(MethodView):
             users = User.query.all()
         return users
     
-    @jwt_required()
+    @jwt_required(fresh=True)
     @auth_blp.arguments(UserSchema)
     @auth_blp.response(201, UserSchema)
     def post(self, user_data):
@@ -79,11 +88,8 @@ class AuthenticationView(MethodView):
                 "id": user.id
             }
             access_token = create_access_token(identity=user.id, additional_claims=add_claims)
-            return {"access_token": access_token}, 200
-        user.failed_pwd += 1
-        if user.failed_pwd >= 3:
-            user.account_locked = True
-        db.session.commit()
+            refresh_token = create_refresh_token(identity=user.id, additional_claims=add_claims)
+            return {"access_token": access_token, "refresh_token": refresh_token}, 200
         if user.account_locked:
             abort(401, message="Account is locked out.")
         abort (401, message="Invalid credentials.")

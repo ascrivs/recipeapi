@@ -16,7 +16,7 @@ class DirectionView(MethodView):
         direction = Direction.query.filter_by(id=direct_id).first()
         return direction
     
-    @jwt_required()
+    @jwt_required(fresh=True)
     @direct_blp.response(201, UpdateDirectionSchema)
     def delete(self, direct_id):
         jwt = get_jwt()
@@ -28,7 +28,7 @@ class DirectionView(MethodView):
             return direct
         abort(403, message="Access denied.")
 
-    @jwt_required()
+    @jwt_required(fresh=True)
     @direct_blp.response(201, UpdateDirectionSchema)
     def put(self, direct_data, direct_id):
         jwt = get_jwt()

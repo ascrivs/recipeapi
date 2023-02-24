@@ -1,6 +1,7 @@
 import os
 import random
 import string
+from datetime import timedelta
 
 basedir = os.path.dirname(__file__)
 
@@ -22,6 +23,8 @@ class DevConfig(BaseConfig):
     DEBUG = True
     ENV = 'development'
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI') or 'sqlite:///'+os.path.join(basedir+'/dev-db.sqlite')
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=1)
 
 class TestConfig(BaseConfig):
     PORT = 8081
@@ -29,6 +32,8 @@ class TestConfig(BaseConfig):
     TESTING = True
     ENV = 'testing'
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI') or 'sqlite:///'+os.path.join(basedir+'/testing-db.sqlite')
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(hours=2)
 
 class ProdConfig(BaseConfig):
     PORT = 80
@@ -36,6 +41,8 @@ class ProdConfig(BaseConfig):
     TESTING = False
     ENV = 'production'
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=4)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=7)
 
 
 config = {
