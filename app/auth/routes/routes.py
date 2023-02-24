@@ -4,7 +4,7 @@ from flask.views import MethodView
 from flask_smorest import abort
 from flask_jwt_extended import jwt_required, get_jwt, create_access_token, get_jwt_identity, create_refresh_token
 from app.schemas import UserSchema
-from app.models import User, BlockedTokens
+from app.models import User, BlockedToken
 from app import db, jwt
 from datetime import datetime
 from functools import wraps
@@ -106,5 +106,6 @@ class AuthJWTTest(MethodView):
 
 @auth_blp.route("/logout")
 class LogoutView(MethodView):
+    @jwt_required(verify_type=False)
     def post():
         pass
