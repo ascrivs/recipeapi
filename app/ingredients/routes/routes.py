@@ -31,13 +31,22 @@ class IngredientView(MethodView):
             db.session.add(updated_ingredient)
             db.session.commit()
             return updated_ingredient
+        else:
+            abort(403, message="You must be the owner of the recipe or an administrator to modify")
 
+    @jwt_required(fresh=True)
     @ingredient_blp.response(200, UpdateIngredientSchema)
     def delete(self, ingredient_id):
-        ingredient = Ingredient.query.filter_by(id=ingredient_id).first()
-        db.session.delete(ingredient)
-        db.session.commit()
-        return ingredient
+        jwt = get_jwt()
+        updated_ingredient = Ingredient.query.filter_by(id=ingredient_id).first()
+        if jwt["id"] == Recipe.query.filter_by(id=updated_ingredient.recipe_id).first().created_by:
+            ingredient = Ingredient.query.filter_by(id=ingredient_id).first()
+            db.session.delete(ingredient)
+            db.session.commit()
+            return ingredient
+        else:
+            abort(403, message="You must be the owner of the recipe or an administrator to modify")
+
 
 
 
@@ -49,10 +58,15 @@ class AllIngredientView(MethodView):
         ingredients = Ingredient.query.all()
         return ingredients
 
+    @jwt_required()
     @ingredient_blp.arguments(BaseIngredientSchema)
     @ingredient_blp.response(201, BaseIngredientSchema)
     def post(self, ingredient_data):
-        new_ingredient = Ingredient(details=ingredient_data['details'], recipe_id=ingredient_data['recipe_id'])
-        db.session.add(new_ingredient)
-        db.session.commit()
-        return new_ingredient
+        jwt = get_jwt()
+        if jwt["id"] == Recipe.query.filter_by(id=ingredient_data["recipe_id"]).first().created_by:
+            new_ingredient = Ingredient(details=ingredient_data['details'], recipe_id=ingredient_data['recipe_id'])
+            db.session.add(new_ingredient)
+            db.session.commit()
+            return new_ingredient
+        else:
+            abort(403, message="You must be the owner of the recipe or an administrator to modify")
