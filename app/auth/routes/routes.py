@@ -4,9 +4,10 @@ from flask.views import MethodView
 from flask_smorest import abort
 from flask_jwt_extended import jwt_required, get_jwt, create_access_token, get_jwt_identity, create_refresh_token
 from app.schemas import UserSchema
-from app.models import User
+from app.models import User, BlockedTokens
 from app import db, jwt
 from datetime import datetime
+from functools import wraps
 
 
 @jwt.expired_token_loader
@@ -37,15 +38,15 @@ def missing_token_callback(error):
         401,
     )
 
-@auth_blp.route('/refresh')
-class AccountAuthentication(MethodView):
-
-    @jwt_required(refresh=True)
-    def refresh(self):
-        identity = get_jwt_identity()
-        access_token = create_access_token(identity=identity)
-        return jsonify(access_token=access_token)
-
+def blacklist_token(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        jwt = get_jwt()
+        if BlockedTokens.query.filter_by(jti=jwt['jti']).first():
+            return abort(403, message="Token is no longer legal. Please login again.")
+        else:
+            return fn(*args, **kwargs)
+    return wrapper
 
 @auth_blp.route('/users')
 class AccountAdminView(MethodView):
@@ -87,9 +88,18 @@ class AuthenticationView(MethodView):
                 "iat": datetime.utcnow(),
                 "id": user.id
             }
-            access_token = create_access_token(identity=user.id, additional_claims=add_claims)
+            access_token = create_access_token(identity=user.id, additional_claims=add_claims, fresh=True)
             refresh_token = create_refresh_token(identity=user.id, additional_claims=add_claims)
             return {"access_token": access_token, "refresh_token": refresh_token}, 200
         if user.account_locked:
             abort(401, message="Account is locked out.")
         abort (401, message="Invalid credentials.")
+
+
+@auth_blp.route("/jwttest")
+class AuthJWTTest(MethodView):
+
+    @jwt_required()
+    def get(self):
+        jwt = get_jwt()
+        return jwt, 200
