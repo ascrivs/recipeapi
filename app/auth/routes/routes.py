@@ -42,7 +42,7 @@ def blacklist_token(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         jwt = get_jwt()
-        if BlockedTokens.query.filter_by(jti=jwt['jti']).first():
+        if BlockedToken.query.filter_by(jti=jwt['jti']).first():
             return abort(403, message="Token is no longer legal. Please login again.")
         else:
             return fn(*args, **kwargs)
@@ -102,10 +102,17 @@ class AuthJWTTest(MethodView):
     @jwt_required()
     def get(self):
         jwt = get_jwt()
-        return jwt, 200
+        now_date = datetime.utcnow()
+        return {"jwt":jwt, "now_date": now_date}, 200
 
 @auth_blp.route("/logout")
 class LogoutView(MethodView):
+
     @jwt_required(verify_type=False)
+    @blacklist_token
     def post():
-        pass
+        jwt = get_jwt()
+        blocked_token = BlockedToken(jti=jwt['jti'], user_id=jwt['user_id'], expiration_date=jwt['exp'])
+        db.session.add(blocked_token)
+        db.session.commit()
+        return {"token logged out": jwt}, 201
